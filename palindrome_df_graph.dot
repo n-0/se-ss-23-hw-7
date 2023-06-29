@@ -1,0 +1,24 @@
+digraph G {
+	fontname="Helvetica,Arial,sans-serif"
+	dim=5
+	nodesep="1"
+	pad="0.5"
+	node [fontname="Helvetica,Arial,sans-serif", shape="circle"]
+	edge [fontname="Helvetica,Arial,sans-serif"]
+
+
+    4 [xlabel="n_decl"]
+    5 [xlabel="m_decl, m_def, n_c_use"]
+    6 [xlabel="n_rev_decl, n_rev_def"] 
+    7 [xlabel="m_p_use"]
+    8 [xlabel="n_rev_def, n_rev_c_use, m_c_use"]
+    9 [xlabel="m_def, m_c_use"]
+    11 [xlabel="n_rev_p_use, n_p_use"]
+    4 -> 5;
+    5 -> 6;
+    6 -> 7;
+    7 -> 11 [label="F"]
+    7 -> 8 [label="T"]; 
+    8 -> 9
+    9 -> 7
+}

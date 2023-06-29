@@ -25,34 +25,59 @@
 }
 
 \section{Ex.2}
+\subsection{Variation of problem}
+\begin{frame}[fragile]{Palindrome}
+    \begin{verbatim}
+1 #include <stdio.h>
+2 #include <stdbool.h>
+3
+4  bool is_palindrome(unsigned int n) {
+5    unsigned int m = n;
+6    unsigned int n_rev = 0;
+7    while (m > 0) {
+8        n_rev = (n_rev*10) + (m % 10);
+9        m = m / 10;
+10   }
+11   return n_rev == n;
+12 }
+    \end{verbatim}
+\end{frame}
+
 \subsection{Data Flow}
 
 
 \begin{frame}{Data Flow Graph}
 \begin{figure}[h]    
 \centering
-\includegraphics[scale=0.3]{dataflowgraph.png}
+\includegraphics[scale=0.3]{palindrome_df_graph.png}
 \end{figure}
 \end{frame}
 
 \begin{frame}
 
 
-\frametitle{DU-Paths (a)}
+\frametitle{DU-Paths (n)}
 \begin{itemize}
-\item 1-2, 1-2-3-9
-\item 1-2-3-4, 1-2-3-4-6-7, 1-2-3-4-6-7-9
-\item 5-8-3-4,  5-8-3-4-6-7 
-\item 5-8-3-9
+\item 5-11 
 \end{itemize}
 \end{frame}
 
 \begin{frame}
-\frametitle{DU-Paths (b)}
+\frametitle{DU-Paths (m)}
 \begin{itemize}
-\item 1-2, 1-2-3
-\item 1-2-3-4, 1-2-3-4-5
-\item 6-7-8-3, 6-7-8-3-4, 6-7-8-3-4-5 
+\item 5-6-7 
+\item 5-6-7-8-9
+\item 9-7-8
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{DU-Paths n\_rev}
+\begin{itemize}
+\item 6-7-8
+\item 6-7-11
+\item 8-9-7
+\item 8-9-7-11
 \end{itemize}
 \end{frame}
 
@@ -61,50 +86,29 @@
 \begin{frame}{Test Suite}
 \begin{tabular}{c c}
 Test      & \#1          \\
-Test Path & 1-2          \\
-Coverage  & 1-2          \\
-Input     & a = 0, b = 0 \\
-Output    & 0             
+Test Path & 4-5-6-7-11          \\
+Coverage  & 4-11, 5-6-7, 6-7-11          \\
+Input     & n = 0 \\
+Output    & true             
 \end{tabular}
 
 \noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
 
 \begin{tabular}{c c}
 Test      & \#2          \\
-Test Path & 1-2-3-9          \\
-Coverage  & 1-2, 1-2-3-9          \\
-Input     & a = 1, b = 0 \\
-Output    & 1             
+Test Path & 4-5-6-7-8-9-7-8-9-7-11          \\
+Coverage  & 4-11, 5-6-7, 5-6-7-8-9, 8-9-7, 8-9-7-11, 9-7-8          \\
+Input     & n = 11 \\
+Output    & true
 \end{tabular}
 \end{frame}
-
-\begin{frame}{Test Suite cont.}
-\begin{tabular}{c c}
-Test      & \#3          \\
-Test Path & 1-2-3-4-6-7-8-3-9          \\
-Coverage  & 1-2, 1-2-3-4, 1-2-3-4-6-7, 1-2-3-4-6-7-8-9          \\
-Input     & a = 1, b = 1 \\
-Output    & 1             
-\end{tabular}
-
-\noindent\makebox[\linewidth]{\rule{\paperwidth}{0.4pt}}
-
-\begin{tabular}{c c}
-Test      & \#4          \\
-Test Path & 1-2-3-4-5-8-3-4-6-7-8-3-9          \\
-Coverage  & 1-2, 1-2-3-4, 5-8-3-4, 5-8-3-4-6-7, 5-8-3-4-9         \\
-Input     & a = 2, b = 1 \\
-Output    & 1             
-\end{tabular}
-\end{frame}
-
-
 \subsection{Comparison}
 \begin{frame}{Comparison Data Flow vs. Branch coverage}
-    For 100\% multiple-condition coverage, \(c = 3 \implies 2^c = 8\)
+    For 100\% multiple-condition coverage, \(c = 1 \implies 2^c = 2\)
     \newline
-    Twice the No. of Data-Flow cases, due to test cases of the form \(a = 0, b = * \).
-    Which never go further than the path 1-2-3-9.
+    Matches exactly the number for covering all DU-paths. This doesn't have
+    to be the case always. The last statement (returning the bool) is unusual
+    as it doesn't change the branching of the program, but very much its behavior.
 \end{frame}
 
 \subsection{Practice}
@@ -118,24 +122,24 @@ The next step are Static Single-Assignment form (SSA) derived from the CFG.
 \begin{frame}[fragile]
     One can generate quiet helpful information that the compiler \(gcc \geq 4.0\) uses via
     \begin{verbatim}
-        gcc gcd_data_flow.c -fdump-tree-all-graph
+        gcc palindrome.c -fdump-tree-all-graph
     \end{verbatim}
     Most importantly 
     \begin{verbatim}
-        gcd_data_flow.c.cfg
+        palindrome.c.cfg
     \end{verbatim}
     \begin{verbatim}
-        gcd_data_flow.c.ssa
+        palindrome.c.ssa
     \end{verbatim}
 \end{frame}
 
 \begin{frame}
-\includegraphics[scale=0.22]{gcd_data_flow_graph_cfg.png}
+\includegraphics[scale=0.22]{palindrome_cfg.png}
 \end{frame}
 
 
 \begin{frame}
-\includegraphics[scale=0.2]{gcd_data_flow_graph_ssa.png}
+\includegraphics[scale=0.2]{palindrome_ssa.png}
 \end{frame}
 
 \begin{frame}[fragile]{Coverage}
@@ -143,100 +147,62 @@ The next step are Static Single-Assignment form (SSA) derived from the CFG.
 How about the statement/decision coverage? Really dependent on the languages ecosystem and most are happy with statement coverage.
 For c there is gcov available. Running
 \begin{verbatim}
+#include <stdbool.h>
 #include <assert.h>
-unsigned gcd(unsigned a, unsigned b) {
-    if (a == 0) return b;
-    while (b != 0) {
-        if (a > b) {
-            a -= b;
-        } else {
-            b -= a;
-    } }
-    return a;
+
+bool is_palindrome(unsigned int n) {
+    unsigned int m = n;
+    unsigned int n_rev = 0;
+    while (m > 0) {
+        n_rev = (n_rev*10) + (m % 10);
+        m = m / 10;
+    }
+    return n_rev == n;
 }
 
 int main() {
-    assert(gcd(0, 0) == 0);
-    assert(gcd(1, 0) == 1);
-    assert(gcd(1, 1) == 1);
-    assert(gcd(2, 1) == 1);
+    assert(is_palindrome(0) == true);
+    assert(is_palindrome(11) == true);
     return 0;
 }
 \end{verbatim}
 \end{tiny}
 \begin{verbatim}
-$ gcc -Wall -fprofile-arcs -ftest-coverage gcd_data_flow_test.c
+$ gcc -Wall -fprofile-arcs -ftest-coverage palindrome_test.c
 $ ./a.out
-$ gcov -b -c gcd_data_flow_test.c
+$ gcov -c palindrome_test.c
 \end{verbatim}
 \end{frame}
 
 \begin{frame}[fragile]
 \begin{tiny}
 \begin{verbatim}
-    File 'gcd_data_flow_test.c'
-    Lines executed:100.00% of 13
-    Branches executed:100.00% of 14
-    Taken at least once:71.43% of 14
-    Calls executed:50.00% of 8
-    Creating 'gcd_data_flow_test.c.gcov'
+    File 'palindrome_test.c'
+    Lines executed:100.00% of 11
+    Branches executed:100.00% of 6
+    Taken at least once:66.67% of 6
+    Calls executed:50.00% of 4
+    Creating 'palindrome_test.c.gcov'
+
+    Lines executed:100.00% of 11
 \end{verbatim}
 
 \begin{verbatim}
-    function gcd called 4 returned 100% blocks executed 100%
-        4:    3:unsigned gcd(unsigned a, unsigned b) {
-        4:    4:    if (a == 0) return b;
-branch  0 taken 25% (fallthrough)
-branch  1 taken 75%
-        6:    5:    while (b != 0) {
-branch  0 taken 50%
-branch  1 taken 50% (fallthrough)
-        3:    6:        if (a > b) {
-branch  0 taken 33% (fallthrough)
-branch  1 taken 67%
-        1:    7:            a -= b;
-        -:    8:        } else {
-        2:    9:            b -= a;
-        -:   10:    } }
-        3:   11:    return a;
-        -:   12:}
-        -:   13:
-
+    function is_palindrome called 2 returned 100% blocks executed 100%
+            2:    4:bool is_palindrome(unsigned int n) {
+            2:    5:    unsigned int m = n;
+            2:    6:    unsigned int n_rev = 0;
+            4:    7:    while (m > 0) {
+    branch  0 taken 2
+    branch  1 taken 2 (fallthrough)
+            2:    8:        n_rev = (n_rev*10) + (m % 10);
+            2:    9:        m = m / 10;
+            -:   10:    }
+            2:   11:    return n_rev == n;
+            -:   12:}
+            -:   13:
 \end{verbatim}
 \end{tiny}
-\end{frame}
-
-\begin{frame}[fragile]
-    \begin{tiny}
-        Removing the last test gives instead
-        \begin{verbatim}
-    File 'gcd_data_flow_test.c'
-    Lines executed:91.67% of 12
-    Branches executed:100.00% of 12
-    Taken at least once:66.67% of 12
-    Calls executed:50.00% of 6
-    Creating 'gcd_data_flow_test.c.gcov'
-        \end{verbatim}
-\begin{verbatim}
-        function gcd called 3 returned 100% blocks executed 90%
-        3:    3:unsigned gcd(unsigned a, unsigned b) {
-        3:    4:    if (a == 0) return b;
-branch  0 taken 33% (fallthrough)
-branch  1 taken 67%
-        3:    5:    while (b != 0) {
-branch  0 taken 33%
-branch  1 taken 67% (fallthrough)
-        1:    6:        if (a > b) {
-branch  0 taken 0% (fallthrough)
-branch  1 taken 100%
-    #####:    7:            a -= b;
-        -:    8:        } else {
-        1:    9:            b -= a;
-        -:   10:    } }
-        2:   11:    return a;
-        -:   12:}
-        \end{verbatim}
-    \end{tiny}
 \end{frame}
 
 \subsection{Thanks}
